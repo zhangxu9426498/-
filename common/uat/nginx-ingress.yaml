@@ -1,0 +1,22 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  annotations:
+    haproxy.router.openshift.io/timeout: 300s #定义超时路由时间（可以时间短一点时间太长容易出问题）
+  name: nginx
+spec:
+  tls: #定义用tls配置用https连接
+    - hosts: #使用tls的主机域名列表
+        - <使用tls的主机（域名）>
+      secretName: <提前创建好的包含有tls证书和私钥的secret>
+  rules: #定义ingress规则
+    - host: <适用规则的主机（域名）>
+      http:  #规则只适用于http流量
+        paths: #定义路径匹配和对应的后端服务
+          - path:  <请求匹配的路径url>          
+            pathType: Prefix #基于前缀匹配
+            backend: #定义后端服务
+              service: #指定后端服务
+                name: <后端服务名称>
+                port:
+                  name: <后端端口名称>

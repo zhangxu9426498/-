@@ -1,0 +1,9 @@
+secretGenerator: #secret生成器
+  - name: <secret名称>
+    type: kubernetes.io/tls #tls类型的secret
+    behavior: create #如果没有这个secret就创建
+    files:
+      - tls.crt    #指定secret从这个文件中获取tls证书
+      - tls.key    #指定secret从这个文件中获取私钥
+# generatorOptions:
+# disableNameSuffixHash: true

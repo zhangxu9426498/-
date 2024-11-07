@@ -1,0 +1,5 @@
+resources:
+  - ../base
+  - nginx-ingress.yaml
+patchesStrategicMerge:
+  - deploy-patch.yaml
