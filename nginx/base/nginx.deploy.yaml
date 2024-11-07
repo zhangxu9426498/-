@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  nginx
+  namespace: default
+  labels:
+    app:  nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  nginx
+        system: srm
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      containers:
+      - name:  nginx
+        image:  nginx:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+      affinity:
+        podAntiAffinity:                   # 工作负载反亲和
+          preferredDuringSchedulingIgnoredDuringExecution:    # 尽量满足如下条件
+            - weight: 100  # 使用尽量满足策略时可设置优先级，取值为1-100，数值越大优先级越高
+              podAffinityTerm:
+                labelSelector:                       # 选择Pod的标签，与工作负载本身反亲和
+                  matchExpressions:
+                    - key: system
+                      operator: In
+                      values:
+                        - srm
+                topologyKey: kubernetes.io/hostname     # 在节点上起作用       
+        ports:
+        - containerPort:  80
+          name:  nginx
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+      restartPolicy: Always
+  revisionHistoryLimit: 3

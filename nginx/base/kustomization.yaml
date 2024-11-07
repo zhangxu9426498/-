@@ -1,0 +1,8 @@
+resources:
+  - nginx-svc.yaml
+  - nginx.deploy.yaml
+images:
+  - name: <镜像名称>
+    newTag: <镜像标签（自动化部署用时间戳）>
+patchesStrategicMerge:
+  - deploy-patch.yaml

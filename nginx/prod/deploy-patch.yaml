@@ -1,0 +1,13 @@
+apiVersion: apps/v1  
+kind: Deployment  
+metadata:  
+  name: nginx.deployment # 确保与被更新的Deployment名称匹配  
+  spec:  
+    template:  
+      spec:  
+        containers:  
+        - name: nginx # 确保与Deployment中容器的名称匹配  
+          env:    
+          - name:   <变量名称>
+            value:  <可以定义url以便于使用变量连接外部地址>
+#若果想更新或者想替换deployment中的参数都可以在patch中添加同步
